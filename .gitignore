@@ -11,3 +11,6 @@ web-build/
 
 # macOS
 .DS_Store
+
+# cant track modulues of sub folder .Added for Meals App
+*/node_modules/**/*

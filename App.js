@@ -1,76 +1,54 @@
-import React from "react";
+import React, { useState, useEffect} from "react";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
-import { Text, View, StyleSheet } from "react-native";
-
-import { NavigationContainer } from "@react-navigation/native";
+import { StyleSheet } from "react-native";
+import * as firebase from 'firebase';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import {
   useFonts as useOswald,
   Oswald_400Regular,
 } from "@expo-google-fonts/oswald";
+
 import { useFonts as useLato, Lato_400Regular } from "@expo-google-fonts/lato";
 
-import { RestaurantsScreen } from "./src/features/restaurants/screens/restaurants.screens";
 import { SafeArea } from "./src/components/utility/safe-area.components";
 
-import { RestaurantsContextProvider } from "./src/services/restaurants/restaurants.context";
+import { AuthenticationContextProvider } from "./src/services/authentication/authentication.context";
+
+import { Navigation } from "./src/infrastructure/navigation";
 
 import { ThemeProvider } from "styled-components/native";
 import { theme } from "./src/infrastructure/theme";
 
-import { Ionicons, Feather } from "@expo/vector-icons";
-
-//import { restaurantsRequest } from './src/services/restaurants/mock/restaurants.service';
-
-//Tab Navigator
-const Tab = createBottomTabNavigator();
-
-const TAB_ICON = {
-  Restaurants: "md-restaurant",
-  Map: "md-map",
-  Settings: "md-settings",
+var firebaseConfig = {
+  apiKey: "AIzaSyC32N-iOV6DLRlEU2FpGGQpy9jWSF3sqcw",
+  authDomain: "mealstogo-7fcb0.firebaseapp.com",
+  projectId: "mealstogo-7fcb0",
+  storageBucket: "mealstogo-7fcb0.appspot.com",
+  messagingSenderId: "461055649372",
+  appId: "1:461055649372:web:c1c223ec3d3236a58ba899"
 };
 
-//jsx currying calls the function tabBarIcon with a parm iconName returns
-//a function which is called with two parameters size and color
-const tabBarIcon = (iconName) => ({ size, color }) => {
-  return <Ionicons name={iconName} size={size} color={color} />;
-};
-
-//screenOptions passed props and we extract route from it destructure
-//tabBarIcon function called internally with size and color
-const createScreenOptions = ({ route }) => {
-  const iconName = TAB_ICON[route.name];
-  return {
-    tabBarIcon: tabBarIcon(iconName),
-    // tabBarIcon: ({size, color}) => (
-    //    <Ionicons name={iconName} size={size} color={color} />
-    // )
-  };
-};
-
-function MapScreen() {
-  return (
-    <SafeArea>
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Map Screen!</Text>
-      </View>
-    </SafeArea>
-  );
+//if firebase app has not been initialized then initialize it.
+if(!firebase.apps.length){
+  firebase.initializeApp(firebaseConfig)
 }
 
-const SettingsScreen = () => {
-  return (
-    <SafeArea>
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Settings!</Text>
-      </View>
-    </SafeArea>
-  );
-};
-
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated]  = useState(false);
+
+  //useEffect(() => {
+    // setTimeout(() => {//wait 2 seconds for authentication to kick in .
+    //   firebase.auth().signInWithEmailAndPassword("walt200065@gmail.com", "Frank#991")
+    //     .then((user) => {
+    //       console.log('User is',user);
+    //       setIsAuthenticated(true)
+    //     }).catch((error) => {
+    //       console.log('Error is ',error);
+    //     });
+    //   },2000)
+  //},[])
+
   //Load Oswald_400Regular
   const [oswaldLoaded] = useOswald({
     Oswald_400Regular,
@@ -86,33 +64,13 @@ export default function App() {
     return null;
   }
 
-  //the next code is basically this
-  //a function passed a prop of route destructured and then
-  //the return returns an object ( means return an object
-  // const screenOptions = ({route}) => {
-  //   return {
-
-  //   }
-  // }
-
+ 
   return (
     <>
       <ThemeProvider theme={theme}>
-        <RestaurantsContextProvider>
-          <NavigationContainer>
-            <Tab.Navigator
-              screenOptions={createScreenOptions}
-              tabBarOptions={{
-                activeTintColor: "tomato",
-                inactiveTintColor: "gray",
-              }}
-            >
-              <Tab.Screen name="Restaurants" component={RestaurantsScreen} />
-              <Tab.Screen name="Settings" component={SettingsScreen} />
-              <Tab.Screen name="Map" component={MapScreen} />
-            </Tab.Navigator>
-          </NavigationContainer>
-        </RestaurantsContextProvider>
+        <AuthenticationContextProvider>
+                <Navigation />
+        </AuthenticationContextProvider>
       </ThemeProvider>
       <ExpoStatusBar style="auto" />
     </>

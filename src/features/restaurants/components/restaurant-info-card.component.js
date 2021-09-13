@@ -3,6 +3,7 @@ import {Spacer} from '../../../components/spacer/spacer.component';
 import styled from "styled-components/native";
 import { Text, View, Image, StyleSheet } from "react-native";
 import { Card } from 'react-native-paper';
+import {Favourite} from '../../../components/favourites/favourite.component'
 import { SvgXml } from 'react-native-svg';
 
 
@@ -55,7 +56,7 @@ const RestaurantCardCover = styled(Card.Cover)`
 `;
 
 export const RestaurantInfoCard = ({ restaurant = {} }) => {
-  console.log('Restaurant in ITEM isL',restaurant.name);
+  
   const {
     name = 'Some restaurant',
     photos = ['https://media.istockphoto.com/photos/cup-of-coffee-picture-id504984010?k=6&m=504984010&s=612x612&w=0&h=VMq6F9EEmGWC834LvBHHj_s9er9h8CAN06uX-RhAx_U='],
@@ -72,6 +73,7 @@ export const RestaurantInfoCard = ({ restaurant = {} }) => {
   
   return (
     <RestaurantCard elevation={5}>
+      <Favourite restaurant={restaurant}/>
       <RestaurantCardCover key={name} 
           source={{ uri: photos[0] }} />
       <Info>

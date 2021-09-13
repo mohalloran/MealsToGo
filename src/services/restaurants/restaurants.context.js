@@ -1,6 +1,7 @@
 import React, {useState, createContext, useEffect, useContext, useMemo} from 'react';
 
 import { restaurantsRequest, restaurantsTransform } from './restaurants.service';
+import { LocationContext } from '../location/location.context';
 //Create a global Context
 export const RestaurantsContext = createContext();
 
@@ -10,12 +11,17 @@ export const RestaurantsContextProvider = ({children}) => {
     const [restaurants, setRestaurants] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error,setError] = useState(null);
+    const {location} = useContext(LocationContext);//grab location
+    
 
-    const retrieveRestaurants = () => {
+    //Note .then returns a promise so you can chain the promises
+    const retrieveRestaurants = (loc) => {
 
         setIsLoading(true);
+        setRestaurants([]);
         setTimeout( () => {
-            restaurantsRequest()
+            //const locationString = `${location.lat},${location.lng}`
+            restaurantsRequest(loc)
             .then(restaurantsTransform)
             .then((restaurantData) => {
                 setRestaurants(restaurantData); 
@@ -30,8 +36,11 @@ export const RestaurantsContextProvider = ({children}) => {
 
     //when component mounts
     useEffect(() => {
-        retrieveRestaurants();
-    },[]);
+        if(location){
+            locationString = `${location.lat},${location.lng}`
+            retrieveRestaurants(locationString);
+        }
+    },[location]);//when the location context changes retrieve the restaurants
 
     return (
         <RestaurantsContext.Provider
